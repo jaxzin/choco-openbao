@@ -81,19 +81,41 @@ Install-Module au -Scope CurrentUser
 The [`update` workflow](.github/workflows/update.yml) runs the updater daily and
 opens a pull request whenever a newer OpenBao release is available.
 
-## Publishing to the Chocolatey Community Repository
+## Releasing / publishing
 
-Publishing is a manual, reviewed step. With a
-[community.chocolatey.org](https://community.chocolatey.org/) account and API
-key:
+Publishing to the
+[Chocolatey Community Repository](https://community.chocolatey.org/) is automated
+by the [`publish` workflow](.github/workflows/publish.yml) and triggered by
+**pushing a version tag**.
+
+### One-time setup
+
+1. Create an API key on community.chocolatey.org (Account → API Keys).
+2. Add it as a repository secret named **`CHOCO_API_KEY`**
+   (Settings → Secrets and variables → Actions → New repository secret).
+
+### Cutting a release
+
+1. Make sure `openbao.nuspec`'s `<version>` is the version you want to publish
+   (the AU updater bumps this for you — see above).
+2. Tag the commit and push the tag, using `v` + the nuspec version:
+
+   ```bash
+   git tag v2.5.4
+   git push origin v2.5.4
+   ```
+
+The workflow verifies the tag matches the nuspec version, packs the `.nupkg`,
+and pushes it to community.chocolatey.org. The **first** push of a new package id
+goes through Chocolatey's moderation review; subsequent versions publish
+automatically once approved.
+
+You can still publish manually if you prefer:
 
 ```powershell
 choco pack openbao.nuspec
-choco apikey --key <YOUR_API_KEY> --source https://push.chocolatey.org/
-choco push openbao.2.5.4.nupkg --source https://push.chocolatey.org/
+choco push openbao.2.5.4.nupkg --source https://push.chocolatey.org/ --api-key <YOUR_API_KEY>
 ```
-
-The first push of a new package id goes through Chocolatey's moderation review.
 
 ## License
 
