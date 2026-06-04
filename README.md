@@ -1,0 +1,111 @@
+# choco-openbao
+
+An unofficial [Chocolatey](https://chocolatey.org/) package that installs the
+[OpenBao](https://openbao.org/) command-line interface (`bao`) on Windows.
+
+OpenBao is an open source, community-driven fork of HashiCorp Vault, managed by
+the Linux Foundation. It manages, stores, and distributes secrets such as
+tokens, passwords, certificates, and encryption keys.
+
+## Installing
+
+Once the package is published to the
+[Chocolatey Community Repository](https://community.chocolatey.org/):
+
+```powershell
+choco install openbao
+```
+
+After installation the `bao` command is available on your `PATH`:
+
+```powershell
+bao version
+bao server -dev
+```
+
+> **64-bit only.** OpenBao does not publish a 32-bit (x86) Windows build. Both
+> `x86_64` (amd64) and `arm64` Windows builds are supported and selected
+> automatically based on your processor architecture.
+
+## How it works
+
+The package does **not** embed any binaries. At install time
+[`tools/chocolateyInstall.ps1`](tools/chocolateyInstall.ps1) downloads the
+official release archive from the
+[OpenBao GitHub releases](https://github.com/openbao/openbao/releases),
+verifies its SHA256 checksum, and extracts `bao.exe`. Chocolatey then creates a
+shim so `bao` is on the `PATH`.
+
+The exact download URLs and checksums for the pinned version, along with how to
+verify them yourself, are documented in
+[`tools/VERIFICATION.txt`](tools/VERIFICATION.txt). The checksums are taken from
+OpenBao's official `checksums-windows.txt` published with each release.
+
+## Building and testing locally
+
+On a Windows machine with Chocolatey installed:
+
+```powershell
+# Build the .nupkg
+choco pack openbao.nuspec
+
+# Install from the local package
+choco install openbao --source "$PWD;https://community.chocolatey.org/api/v2/" -y
+
+# Verify
+bao version
+
+# Clean up
+choco uninstall openbao -y
+```
+
+The [`build` workflow](.github/workflows/build.yml) runs exactly this
+pack → install → `bao version` → uninstall cycle on `windows-latest` for every
+push and pull request.
+
+## Keeping the package up to date
+
+Version bumps are automated with
+[chocolatey-au](https://github.com/chocolatey-community/chocolatey-au). The
+[`update.ps1`](update.ps1) script discovers the latest OpenBao release, reads
+the official `checksums-windows.txt`, and rewrites the version, download URLs,
+and checksums in the nuspec, install script, and `VERIFICATION.txt`.
+
+Run it manually:
+
+```powershell
+Install-Module au -Scope CurrentUser
+./update.ps1
+```
+
+The [`update` workflow](.github/workflows/update.yml) runs the updater daily and
+opens a pull request whenever a newer OpenBao release is available.
+
+## Publishing to the Chocolatey Community Repository
+
+Publishing is a manual, reviewed step. With a
+[community.chocolatey.org](https://community.chocolatey.org/) account and API
+key:
+
+```powershell
+choco pack openbao.nuspec
+choco apikey --key <YOUR_API_KEY> --source https://push.chocolatey.org/
+choco push openbao.2.5.4.nupkg --source https://push.chocolatey.org/
+```
+
+The first push of a new package id goes through Chocolatey's moderation review.
+
+## License
+
+The packaging in this repository (the nuspec, install scripts, updater, and
+workflows) is licensed under the [MIT License](LICENSE).
+
+OpenBao itself is a separate work, licensed under the
+[Mozilla Public License 2.0](https://github.com/openbao/openbao/blob/main/LICENSE),
+a copy of which is bundled in the package as
+[`tools/LICENSE.txt`](tools/LICENSE.txt).
+
+This is an unofficial, community-maintained package and is not affiliated with
+or endorsed by the OpenBao project. Report packaging issues here; report issues
+with OpenBao itself on the
+[OpenBao issue tracker](https://github.com/openbao/openbao/issues).
