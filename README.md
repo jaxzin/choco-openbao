@@ -110,6 +110,15 @@ and pushes it to community.chocolatey.org. The **first** push of a new package i
 goes through Chocolatey's moderation review; subsequent versions publish
 automatically once approved.
 
+### Hands-off releases (auto-tag)
+
+The [`auto-tag` workflow](.github/workflows/auto-tag.yml) makes releases
+automatic: whenever a change to `openbao.nuspec` lands on `main` (e.g. you merge
+the chocolatey-au bump PR), it creates the matching `v<version>` tag if it
+doesn't exist and invokes the publish workflow. So a typical new release is just
+**merge the AU bump PR** — the tag and publish happen for you. Manual tagging
+still works for ad-hoc releases.
+
 You can still publish manually if you prefer:
 
 ```powershell
