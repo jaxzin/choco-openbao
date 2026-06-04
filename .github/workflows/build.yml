@@ -1,0 +1,43 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pack-and-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pack the package
+        shell: pwsh
+        run: choco pack openbao.nuspec --outputdirectory .
+
+      - name: Install from local package
+        shell: pwsh
+        run: |
+          $nupkg = Get-ChildItem -Filter 'openbao.*.nupkg' | Select-Object -First 1
+          Write-Host "Installing $($nupkg.Name)"
+          choco install openbao --source "$($PWD.Path);https://community.chocolatey.org/api/v2/" -y --no-progress
+          if ($LASTEXITCODE -ne 0) { throw "choco install failed with exit code $LASTEXITCODE" }
+
+      - name: Verify the bao command works
+        shell: pwsh
+        run: |
+          $expected = ([xml](Get-Content openbao.nuspec)).package.metadata.version
+          # Call the Chocolatey-created shim directly so we don't depend on the
+          # session PATH being refreshed between job steps.
+          $bao = Join-Path $env:ChocolateyInstall 'bin\bao.exe'
+          if (-not (Test-Path $bao)) { throw "Expected shim not found at $bao" }
+          $output = & $bao version | Out-String
+          Write-Host "bao version => $output"
+          if ($output -notmatch [regex]::Escape($expected)) {
+            throw "Expected 'bao version' to report $expected but got: $output"
+          }
+
+      - name: Uninstall
+        shell: pwsh
+        run: choco uninstall openbao -y --no-progress
