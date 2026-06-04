@@ -97,9 +97,13 @@ The first push of a new package id goes through Chocolatey's moderation review.
 
 ## License
 
-The packaging in this repository is provided as-is. OpenBao itself is licensed
-under the [Mozilla Public License 2.0](https://github.com/openbao/openbao/blob/main/LICENSE),
-a copy of which is included as [`tools/LICENSE.txt`](tools/LICENSE.txt).
+The packaging in this repository (the nuspec, install scripts, updater, and
+workflows) is licensed under the [MIT License](LICENSE).
+
+OpenBao itself is a separate work, licensed under the
+[Mozilla Public License 2.0](https://github.com/openbao/openbao/blob/main/LICENSE),
+a copy of which is bundled in the package as
+[`tools/LICENSE.txt`](tools/LICENSE.txt).
 
 This is an unofficial, community-maintained package and is not affiliated with
 or endorsed by the OpenBao project. Report packaging issues here; report issues
