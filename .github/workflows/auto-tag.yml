@@ -1,0 +1,52 @@
+name: auto-tag
+
+# When a version bump lands on main (openbao.nuspec changes), create the matching
+# v<version> tag if it doesn't already exist, then publish that version to the
+# Chocolatey Community Repository via the reusable publish workflow.
+#
+# This makes a release fully automatic after you merge the chocolatey-au bump PR:
+# no manual tagging required. (You can still tag manually for ad-hoc releases.)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'openbao.nuspec'
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    outputs:
+      created: ${{ steps.tag.outputs.created }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: tag
+        shell: bash
+        run: |
+          version=$(grep -oP '(?<=<version>)[^<]+' openbao.nuspec | head -1)
+          tag="v$version"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+            echo "Tag $tag already exists; nothing to do."
+            echo "created=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name  "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "$tag" -m "OpenBao Chocolatey package $tag"
+            git push origin "$tag"
+            echo "Created and pushed $tag."
+            echo "created=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # The tag above is created with GITHUB_TOKEN, which deliberately does NOT
+  # re-trigger the tag-driven `publish` workflow. So we call it directly here.
+  publish:
+    needs: tag
+    if: needs.tag.outputs.created == 'true'
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
