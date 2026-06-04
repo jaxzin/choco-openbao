@@ -1,0 +1,44 @@
+name: publish
+
+# Publishes the package to the Chocolatey Community Repository when a version
+# tag is pushed (e.g. `v2.5.4`). The tag must match the version in openbao.nuspec.
+#
+# Requires a repository secret named CHOCO_API_KEY containing your
+# community.chocolatey.org API key (Account -> API Keys on the website).
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify the tag matches the nuspec version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}" -replace '^v', ''
+          $nuspecVersion = ([xml](Get-Content openbao.nuspec)).package.metadata.version
+          Write-Host "Tag version:    $tag"
+          Write-Host "Nuspec version: $nuspecVersion"
+          if ($tag -ne $nuspecVersion) {
+            throw "Tag '$tag' does not match openbao.nuspec version '$nuspecVersion'. Bump the nuspec (or retag) so they match before publishing."
+          }
+
+      - name: Pack
+        shell: pwsh
+        run: choco pack openbao.nuspec --outputdirectory .
+
+      - name: Push to the Chocolatey Community Repository
+        shell: pwsh
+        env:
+          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+        run: |
+          if (-not $env:CHOCO_API_KEY) { throw "The CHOCO_API_KEY secret is not set on this repository." }
+          $nupkg = Get-ChildItem -Filter 'openbao.*.nupkg' | Select-Object -First 1
+          Write-Host "Pushing $($nupkg.Name) to community.chocolatey.org"
+          choco push $nupkg.FullName --source https://push.chocolatey.org/ --api-key $env:CHOCO_API_KEY
+          if ($LASTEXITCODE -ne 0) { throw "choco push failed with exit code $LASTEXITCODE" }
