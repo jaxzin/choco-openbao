@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>openbao</id>
+    <version>2.5.4</version>
+    <packageSourceUrl>https://github.com/jaxzin/choco-openbao</packageSourceUrl>
+    <owners>jaxzin</owners>
+    <title>OpenBao (Install)</title>
+    <authors>OpenBao a Series of LF Projects, LLC</authors>
+    <projectUrl>https://openbao.org/</projectUrl>
+    <iconUrl>https://cdn.jsdelivr.net/gh/openbao/artwork@main/color/openbao-color.png</iconUrl>
+    <copyright>Copyright 2024 OpenBao a Series of LF Projects, LLC</copyright>
+    <licenseUrl>https://github.com/openbao/openbao/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/openbao/openbao</projectSourceUrl>
+    <docsUrl>https://openbao.org/docs/</docsUrl>
+    <bugTrackerUrl>https://github.com/openbao/openbao/issues</bugTrackerUrl>
+    <tags>openbao bao secrets vault secrets-management security cli hashicorp-vault encryption pki kv admin foss cross-platform</tags>
+    <summary>OpenBao - manage, store, and distribute secrets such as tokens, passwords, certificates, and encryption keys.</summary>
+    <description><![CDATA[
+[OpenBao](https://openbao.org/) is an open source, community-driven fork of HashiCorp Vault, managed by the Linux Foundation. It exists to provide a software solution to manage, store, and distribute sensitive data including secrets, certificates, and keys.
+
+This package downloads the official OpenBao release archive from the
+[OpenBao GitHub releases](https://github.com/openbao/openbao/releases) and verifies its SHA256 checksum before installing.
+
+## What you get
+
+The package installs the OpenBao command-line interface. After installation the
+`bao` command is available on your `PATH` (Chocolatey creates a shim automatically):
+
+```powershell
+bao version
+bao server -dev
+```
+
+## Notes
+
+* 64-bit only. OpenBao does not publish a 32-bit (x86) Windows build. Both
+  `x86_64` (amd64) and `arm64` Windows builds are supported and selected
+  automatically based on your processor architecture.
+* This is an unofficial, community-maintained Chocolatey package. Package
+  problems should be reported on the
+  [package source repository](https://github.com/jaxzin/choco-openbao/issues);
+  problems with OpenBao itself belong on the
+  [OpenBao issue tracker](https://github.com/openbao/openbao/issues).
+]]></description>
+    <releaseNotes>https://github.com/openbao/openbao/releases/tag/v2.5.4</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

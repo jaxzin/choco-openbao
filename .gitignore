@@ -1,0 +1,6 @@
+# Chocolatey build artifacts
+*.nupkg
+
+# chocolatey-au output
+update_info/
+Update-AUPackages.log
