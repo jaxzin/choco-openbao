@@ -18,7 +18,14 @@ jobs:
   au-update:
     runs-on: windows-latest
     steps:
+      # Check out into a subdirectory named after the package id. chocolatey-au
+      # derives the package name from the leaf of the working directory and then
+      # looks for "<leaf>.nuspec", so the directory MUST be named "openbao" (not
+      # the repo name "choco-openbao") or Update-Package throws
+      # "No nuspec file found in the package directory".
       - uses: actions/checkout@v4
+        with:
+          path: openbao
 
       - name: Install chocolatey-au
         shell: pwsh
@@ -26,6 +33,7 @@ jobs:
 
       - name: Run the updater
         shell: pwsh
+        working-directory: openbao
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./update.ps1
@@ -33,6 +41,7 @@ jobs:
       - name: Open a pull request if the package changed
         uses: peter-evans/create-pull-request@v6
         with:
+          path: openbao
           commit-message: "Update OpenBao package to the latest release"
           title: "Update OpenBao package to the latest release"
           body: |
