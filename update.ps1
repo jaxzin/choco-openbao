@@ -26,8 +26,16 @@ function global:au_GetLatest {
   $version = $tag -replace '^v', ''        # e.g. 2.5.4
 
   # Pull the official Windows checksums file and parse the two archives we ship.
+  # GitHub serves the asset as application/octet-stream, so Invoke-WebRequest
+  # returns .Content as a byte[]. Decode it to text before parsing — otherwise
+  # splitting the byte array yields per-byte garbage and no checksum is found.
   $checksumsUrl = "https://github.com/$repo/releases/download/$tag/checksums-windows.txt"
-  $checksums = (Invoke-WebRequest -Uri $checksumsUrl -Headers $headers -UseBasicParsing).Content
+  $checksumsRaw = (Invoke-WebRequest -Uri $checksumsUrl -Headers $headers -UseBasicParsing).Content
+  $checksums = if ($checksumsRaw -is [byte[]]) {
+    [System.Text.Encoding]::UTF8.GetString($checksumsRaw)
+  } else {
+    $checksumsRaw
+  }
 
   function Get-Sum([string]$fileName) {
     foreach ($line in $checksums -split "`n") {
