@@ -12,6 +12,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate nuspec against Chocolatey gallery limits
+        shell: pwsh
+        run: |
+          # The community gallery hard-rejects a <description> over 4000 chars —
+          # and it surfaces as a bare "409 (Conflict)" at push time with no
+          # explanation (choco discards the response body). Fail here instead.
+          $description = ([xml](Get-Content openbao.nuspec)).package.metadata.description
+          $length = $description.Length
+          Write-Host "nuspec description length: $length (gallery limit: 4000)"
+          if ($length -gt 4000) {
+            throw "openbao.nuspec <description> is $length characters; community.chocolatey.org rejects anything over 4000 (as an unexplained 409 Conflict at push time). Trim it — repo/development docs belong in README.md."
+          }
+
       - name: Pack the package
         shell: pwsh
         run: choco pack openbao.nuspec --outputdirectory .
