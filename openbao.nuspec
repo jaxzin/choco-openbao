@@ -48,7 +48,7 @@ bao server -dev
 ## How it works
 
 The package does **not** embed any binaries. At install time
-[`tools/chocolateyInstall.ps1`](tools/chocolateyInstall.ps1) downloads the
+[`tools/chocolateyInstall.ps1`](https://github.com/jaxzin/choco-openbao/blob/main/tools/chocolateyInstall.ps1) downloads the
 official release archive from the
 [OpenBao GitHub releases](https://github.com/openbao/openbao/releases),
 verifies its SHA256 checksum, and extracts `bao.exe`. Chocolatey then creates a
@@ -56,7 +56,7 @@ shim so `bao` is on the `PATH`.
 
 The exact download URLs and checksums for the pinned version, along with how to
 verify them yourself, are documented in
-[`tools/VERIFICATION.txt`](tools/VERIFICATION.txt). The checksums are taken from
+[`tools/VERIFICATION.txt`](https://github.com/jaxzin/choco-openbao/blob/main/tools/VERIFICATION.txt). The checksums are taken from
 OpenBao's official `checksums-windows.txt` published with each release.
 
 ## Building and testing locally
@@ -77,7 +77,7 @@ bao version
 choco uninstall openbao -y
 ```
 
-The [`build` workflow](.github/workflows/build.yml) runs exactly this
+The [`build` workflow](https://github.com/jaxzin/choco-openbao/blob/main/.github/workflows/build.yml) runs exactly this
 pack → install → `bao version` → uninstall cycle on `windows-latest` for every
 push and pull request.
 
@@ -85,7 +85,7 @@ push and pull request.
 
 Version bumps are automated with
 [chocolatey-au](https://github.com/chocolatey-community/chocolatey-au). The
-[`update.ps1`](update.ps1) script discovers the latest OpenBao release, reads
+[`update.ps1`](https://github.com/jaxzin/choco-openbao/blob/main/update.ps1) script discovers the latest OpenBao release, reads
 the official `checksums-windows.txt`, and rewrites the version, download URLs,
 and checksums in the nuspec, install script, and `VERIFICATION.txt`.
 
@@ -96,14 +96,14 @@ Install-Module au -Scope CurrentUser
 ./update.ps1
 ```
 
-The [`update` workflow](.github/workflows/update.yml) runs the updater daily and
+The [`update` workflow](https://github.com/jaxzin/choco-openbao/blob/main/.github/workflows/update.yml) runs the updater daily and
 opens a pull request whenever a newer OpenBao release is available.
 
 ## Releasing / publishing
 
 Publishing to the
 [Chocolatey Community Repository](https://community.chocolatey.org/) is automated
-by the [`publish` workflow](.github/workflows/publish.yml) and triggered by
+by the [`publish` workflow](https://github.com/jaxzin/choco-openbao/blob/main/.github/workflows/publish.yml) and triggered by
 **pushing a version tag**.
 
 ### One-time setup
@@ -130,7 +130,7 @@ automatically once approved.
 
 ### Hands-off releases (auto-tag)
 
-The [`auto-tag` workflow](.github/workflows/auto-tag.yml) makes releases
+The [`auto-tag` workflow](https://github.com/jaxzin/choco-openbao/blob/main/.github/workflows/auto-tag.yml) makes releases
 automatic: whenever a change to `openbao.nuspec` lands on `main` (e.g. you merge
 the chocolatey-au bump PR), it creates the matching `v<version>` tag if it
 doesn't exist and invokes the publish workflow. So a typical new release is just
@@ -147,12 +147,12 @@ choco push openbao.2.5.4.nupkg --source https://push.chocolatey.org/ --api-key <
 ## License
 
 The packaging in this repository (the nuspec, install scripts, updater, and
-workflows) is licensed under the [MIT License](LICENSE).
+workflows) is licensed under the [MIT License](https://github.com/jaxzin/choco-openbao/blob/main/LICENSE).
 
 OpenBao itself is a separate work, licensed under the
 [Mozilla Public License 2.0](https://github.com/openbao/openbao/blob/main/LICENSE),
 a copy of which is bundled in the package as
-[`tools/LICENSE.txt`](tools/LICENSE.txt).
+[`tools/LICENSE.txt`](https://github.com/jaxzin/choco-openbao/blob/main/tools/LICENSE.txt).
 
 This is an unofficial, community-maintained package and is not affiliated with
 or endorsed by the OpenBao project. Report packaging issues here; report issues
