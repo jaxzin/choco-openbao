@@ -18,6 +18,18 @@ jobs:
   au-update:
     runs-on: windows-latest
     steps:
+      # Mint a short-lived token for a GitHub App installed on this repo. Commits
+      # created with this token (via create-pull-request's sign-commits) are
+      # signed by GitHub and show as "Verified", so the AU bump PR satisfies the
+      # "commits must have verified signatures" branch-protection rule on main
+      # and can be merged normally.
+      - name: Generate a GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.AU_APP_ID }}
+          private-key: ${{ secrets.AU_APP_PRIVATE_KEY }}
+
       # Check out into a subdirectory named after the package id. chocolatey-au
       # derives the package name from the leaf of the working directory and then
       # looks for "<leaf>.nuspec", so the directory MUST be named "openbao" (not
@@ -26,6 +38,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: openbao
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Install chocolatey-au
         shell: pwsh
@@ -42,6 +55,11 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           path: openbao
+          token: ${{ steps.app-token.outputs.token }}
+          # Create the commit through the GitHub API so it is signed and shows as
+          # "Verified" (required to merge under branch protection). Needs the App
+          # token above, not the default GITHUB_TOKEN.
+          sign-commits: true
           commit-message: "Update OpenBao package to the latest release"
           title: "Update OpenBao package to the latest release"
           body: |
