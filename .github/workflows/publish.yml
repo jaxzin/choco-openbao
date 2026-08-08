@@ -45,5 +45,15 @@ jobs:
           if (-not $env:CHOCO_API_KEY) { throw "The CHOCO_API_KEY secret is not set on this repository." }
           $nupkg = Get-ChildItem -Filter 'openbao.*.nupkg' | Select-Object -First 1
           Write-Host "Pushing $($nupkg.Name) to community.chocolatey.org"
-          choco push $nupkg.FullName --source https://push.chocolatey.org/ --api-key $env:CHOCO_API_KEY
-          if ($LASTEXITCODE -ne 0) { throw "choco push failed with exit code $LASTEXITCODE" }
+          # Capture output so we can distinguish a benign 409 (this version was
+          # already submitted / is in moderation) from a real push failure.
+          $out = choco push $nupkg.FullName --source https://push.chocolatey.org/ --api-key $env:CHOCO_API_KEY 2>&1
+          $code = $LASTEXITCODE
+          $out | ForEach-Object { Write-Host $_ }
+          if ($code -ne 0) {
+            if ($out -match '409' -or $out -match 'already exists') {
+              Write-Host "::notice::Version already submitted (409 Conflict) — treating as success."
+            } else {
+              throw "choco push failed with exit code $code"
+            }
+          }
