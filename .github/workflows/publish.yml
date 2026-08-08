@@ -44,16 +44,27 @@ jobs:
         run: |
           if (-not $env:CHOCO_API_KEY) { throw "The CHOCO_API_KEY secret is not set on this repository." }
           $nupkg = Get-ChildItem -Filter 'openbao.*.nupkg' | Select-Object -First 1
+          $version = ([xml](Get-Content openbao.nuspec)).package.metadata.version
           Write-Host "Pushing $($nupkg.Name) to community.chocolatey.org"
-          # Capture output so we can distinguish a benign 409 (this version was
-          # already submitted / is in moderation) from a real push failure.
           $out = choco push $nupkg.FullName --source https://push.chocolatey.org/ --api-key $env:CHOCO_API_KEY 2>&1
           $code = $LASTEXITCODE
           $out | ForEach-Object { Write-Host $_ }
-          if ($code -ne 0) {
-            if ($out -match '409' -or $out -match 'already exists') {
-              Write-Host "::notice::Version already submitted (409 Conflict) — treating as success."
-            } else {
-              throw "choco push failed with exit code $code"
+          if ($code -eq 0) { exit 0 }
+
+          # choco returns 409 for two very different situations, with identical
+          # wording ("version already exists OR a nuspec element is invalid"):
+          #   1. the version really is already on the gallery (benign re-push)
+          #   2. the gallery rejected the package at validation time (real failure)
+          # Only (1) is safe to swallow. Ask the gallery whether this exact
+          # id+version exists; treat the 409 as success only if it does.
+          if ($out -match '409') {
+            $url = "https://community.chocolatey.org/api/v2/Packages(Id='openbao',Version='$version')"
+            try { $status = (Invoke-WebRequest -Uri $url -UseBasicParsing -Method Get).StatusCode }
+            catch { $status = $_.Exception.Response.StatusCode.value__ }
+            if ($status -eq 200) {
+              Write-Host "::notice::openbao $version already exists on the gallery (409) — treating as success."
+              exit 0
             }
+            throw "choco push returned 409 but openbao $version is NOT on the gallery (lookup HTTP $status). This is a validation rejection, not a duplicate — check the nuspec."
           }
+          throw "choco push failed with exit code $code"
