@@ -2,9 +2,11 @@ name: publish
 
 # Publishes the package to the Chocolatey Community Repository.
 #
-# Triggered two ways:
+# Triggered three ways:
 #   * push of a version tag (e.g. `v2.5.4`) — the manual release path
 #   * workflow_call — invoked by auto-tag.yml after it creates a tag on a version bump
+#   * workflow_dispatch — manual re-publish of the current nuspec version, e.g. to
+#     repush a same-version package that is still in the moderation queue
 #
 # Requires a repository secret named CHOCO_API_KEY containing your
 # community.chocolatey.org API key (Account -> API Keys on the website).
@@ -14,6 +16,7 @@ on:
     tags:
       - 'v*'
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   publish:
