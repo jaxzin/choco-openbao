@@ -3,7 +3,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>openbao</id>
-    <version>2.5.5</version>
+    <version>2.6.2</version>
     <packageSourceUrl>https://github.com/jaxzin/choco-openbao</packageSourceUrl>
     <owners>jaxzin</owners>
     <title>OpenBao (Install)</title>
@@ -45,7 +45,7 @@ official release archive from the
 verifies its SHA256 checksum, and extracts `bao.exe`. Chocolatey then creates a
 shim so `bao` is on your `PATH`.
 
-The checksums are taken from OpenBao's official `checksums-windows.txt`
+The checksums are taken from OpenBao's official `checksums.txt`
 published with each release. The exact download URLs and checksums for this
 version, along with how to verify them yourself, are documented in
 `tools\VERIFICATION.txt` inside the package.
@@ -64,7 +64,7 @@ or endorsed by the OpenBao project. Report packaging issues on the
 report issues with OpenBao itself on the
 [OpenBao issue tracker](https://github.com/openbao/openbao/issues).
 ]]></description>
-    <releaseNotes>https://github.com/openbao/openbao/releases/tag/v2.5.5</releaseNotes>
+    <releaseNotes>https://github.com/openbao/openbao/releases/tag/v2.6.2</releaseNotes>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />

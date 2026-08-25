@@ -128,4 +128,9 @@ LICENSE.txt and is also available at:
 
 # Checksums are sourced from the official checksums file, so do not let au
 # recompute them from the downloaded archives.
-Update-Package -ChecksumFor none -Force:$Force
+#
+# -NoReadme keeps the nuspec <description> authoritative. By default au syncs the
+# description from README.md, but the full README (~4.9k chars) exceeds the
+# Chocolatey gallery's 4000-char description limit; the nuspec carries its own
+# trimmed description instead.
+Update-Package -ChecksumFor none -NoReadme -Force:$Force
