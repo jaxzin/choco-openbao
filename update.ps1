@@ -25,11 +25,13 @@ function global:au_GetLatest {
   $tag = $release.tag_name                 # e.g. v2.5.4
   $version = $tag -replace '^v', ''        # e.g. 2.5.4
 
-  # Pull the official Windows checksums file and parse the two archives we ship.
+  # Pull the official checksums file and parse the two archives we ship. As of
+  # v2.6.0 OpenBao publishes a single combined `checksums.txt` (the old
+  # per-OS `checksums-windows.txt` was removed).
   # GitHub serves the asset as application/octet-stream, so Invoke-WebRequest
   # returns .Content as a byte[]. Decode it to text before parsing — otherwise
   # splitting the byte array yields per-byte garbage and no checksum is found.
-  $checksumsUrl = "https://github.com/$repo/releases/download/$tag/checksums-windows.txt"
+  $checksumsUrl = "https://github.com/$repo/releases/download/$tag/checksums.txt"
   $checksumsRaw = (Invoke-WebRequest -Uri $checksumsUrl -Headers $headers -UseBasicParsing).Content
   $checksums = if ($checksumsRaw -is [byte[]]) {
     [System.Text.Encoding]::UTF8.GetString($checksumsRaw)
@@ -45,8 +47,10 @@ function global:au_GetLatest {
     throw "Checksum for $fileName not found in checksums-windows.txt"
   }
 
-  $amd64File = "bao_${version}_Windows_x86_64.zip"
-  $arm64File = "bao_${version}_Windows_arm64.zip"
+  # Archive naming also changed at v2.6.0: `bao_<v>_Windows_x86_64.zip` became
+  # `openbao_<v>_windows_amd64.zip` (and `Windows_arm64` -> `windows_arm64`).
+  $amd64File = "openbao_${version}_windows_amd64.zip"
+  $arm64File = "openbao_${version}_windows_arm64.zip"
 
   return @{
     Version        = $version
@@ -104,14 +108,14 @@ Downloaded files and their expected SHA256 checksums:
 These checksums come from the official per-OS checksum file published with the
 release:
 
-    https://github.com/$repo/releases/download/$($Latest.Tag)/checksums-windows.txt
+    https://github.com/$repo/releases/download/$($Latest.Tag)/checksums.txt
 
 To verify a download yourself (PowerShell):
 
-    Get-FileHash -Algorithm SHA256 .\bao_$($Latest.Version)_Windows_x86_64.zip
+    Get-FileHash -Algorithm SHA256 .\openbao_$($Latest.Version)_windows_amd64.zip
 
 and compare the result to the value above, or cross-check it against
-checksums-windows.txt.
+checksums.txt.
 
 The OpenBao LICENSE (Mozilla Public License 2.0) is included in this package as
 LICENSE.txt and is also available at:
