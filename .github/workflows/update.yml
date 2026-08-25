@@ -23,7 +23,7 @@ jobs:
       # looks for "<leaf>.nuspec", so the directory MUST be named "openbao" (not
       # the repo name "choco-openbao") or Update-Package throws
       # "No nuspec file found in the package directory".
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: openbao
 
@@ -39,7 +39,7 @@ jobs:
         run: ./update.ps1
 
       - name: Open a pull request if the package changed
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           path: openbao
           commit-message: "Update OpenBao package to the latest release"
