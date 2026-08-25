@@ -36,10 +36,9 @@ official release archive from the
 verifies its SHA256 checksum, and extracts `bao.exe`. Chocolatey then creates a
 shim so `bao` is on the `PATH`.
 
-The exact download URLs and checksums for the pinned version, along with how to
-verify them yourself, are documented in
-[`tools/VERIFICATION.txt`](tools/VERIFICATION.txt). The checksums are taken from
-OpenBao's official `checksums-windows.txt` published with each release.
+The download URL and checksum for the pinned version live in
+[`tools/chocolateyInstall.ps1`](tools/chocolateyInstall.ps1). The checksums are
+taken from OpenBao's official `checksums.txt` published with each release.
 
 ## Building and testing locally
 
@@ -68,8 +67,8 @@ push and pull request.
 Version bumps are automated with
 [chocolatey-au](https://github.com/chocolatey-community/chocolatey-au). The
 [`update.ps1`](update.ps1) script discovers the latest OpenBao release, reads
-the official `checksums-windows.txt`, and rewrites the version, download URLs,
-and checksums in the nuspec, install script, and `VERIFICATION.txt`.
+the official `checksums.txt`, and rewrites the version, download URLs, and
+checksums in the nuspec and install script.
 
 Run it manually:
 
@@ -132,9 +131,7 @@ The packaging in this repository (the nuspec, install scripts, updater, and
 workflows) is licensed under the [MIT License](LICENSE).
 
 OpenBao itself is a separate work, licensed under the
-[Mozilla Public License 2.0](https://github.com/openbao/openbao/blob/main/LICENSE),
-a copy of which is bundled in the package as
-[`tools/LICENSE.txt`](tools/LICENSE.txt).
+[Mozilla Public License 2.0](https://github.com/openbao/openbao/blob/main/LICENSE).
 
 This is an unofficial, community-maintained package and is not affiliated with
 or endorsed by the OpenBao project. Report packaging issues here; report issues

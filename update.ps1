@@ -1,8 +1,8 @@
 #requires -Modules au
 # chocolatey-au updater for the OpenBao package.
 #
-# Detects the latest OpenBao release on GitHub, reads the official
-# checksums-windows.txt to obtain the SHA256 checksums for the Windows x86_64 and
+# Detects the latest OpenBao release on GitHub, reads the official checksums.txt
+# to obtain the SHA256 checksums for the Windows amd64 and
 # arm64 archives, and rewrites the version, download URLs, and checksums across
 # the package files.
 #
@@ -44,7 +44,7 @@ function global:au_GetLatest {
       $parts = $line.Trim() -split '\s+'
       if ($parts.Count -ge 2 -and $parts[1] -eq $fileName) { return $parts[0] }
     }
-    throw "Checksum for $fileName not found in checksums-windows.txt"
+    throw "Checksum for $fileName not found in checksums.txt"
   }
 
   # Archive naming also changed at v2.6.0: `bao_<v>_Windows_x86_64.zip` became
@@ -76,54 +76,6 @@ function global:au_SearchReplace {
       '(?m)(<releaseNotes>).*(</releaseNotes>)' = "`${1}$($Latest.ReleaseNotes)`${2}"
     }
   }
-}
-
-# VERIFICATION.txt embeds the full (per-release) checksums, so regenerate it from
-# a template rather than trying to regex-patch individual hash values in place.
-function global:au_AfterUpdate {
-  $verification = @"
-VERIFICATION
-
-Verification is intended to assist the Chocolatey moderators and any user in
-verifying that the binaries this package installs are the official, unmodified
-OpenBao release binaries.
-
-This package does NOT embed any binaries. At install time it downloads the
-official release archive directly from the OpenBao GitHub releases page and
-verifies its SHA256 checksum before extracting it.
-
-Package version: $($Latest.Version)
-Upstream release: $($Latest.ReleaseNotes)
-
-Downloaded files and their expected SHA256 checksums:
-
-  x86_64 (amd64):
-    URL:      $($Latest.URL64)
-    SHA256:   $($Latest.Checksum64)
-
-  arm64:
-    URL:      $($Latest.URLARM64)
-    SHA256:   $($Latest.ChecksumARM64)
-
-These checksums come from the official per-OS checksum file published with the
-release:
-
-    https://github.com/$repo/releases/download/$($Latest.Tag)/checksums.txt
-
-To verify a download yourself (PowerShell):
-
-    Get-FileHash -Algorithm SHA256 .\openbao_$($Latest.Version)_windows_amd64.zip
-
-and compare the result to the value above, or cross-check it against
-checksums.txt.
-
-The OpenBao LICENSE (Mozilla Public License 2.0) is included in this package as
-LICENSE.txt and is also available at:
-
-    https://github.com/openbao/openbao/blob/main/LICENSE
-"@
-
-  Set-Content -Path "$PSScriptRoot\tools\VERIFICATION.txt" -Value $verification -Encoding ascii
 }
 
 # Checksums are sourced from the official checksums file, so do not let au
