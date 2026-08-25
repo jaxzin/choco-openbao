@@ -45,18 +45,16 @@ official release archive from the
 verifies its SHA256 checksum, and extracts `bao.exe`. Chocolatey then creates a
 shim so `bao` is on your `PATH`.
 
-The checksums are taken from OpenBao's official `checksums.txt`
-published with each release. The exact download URLs and checksums for this
-version, along with how to verify them yourself, are documented in
-`tools\VERIFICATION.txt` inside the package.
+The checksums are taken from OpenBao's official `checksums.txt` published with
+each release. The exact download URL and checksum for this version are pinned in
+the install script, and you can cross-check them against that file yourself.
 
 ## License
 
 The packaging is licensed under the
 [MIT License](https://github.com/jaxzin/choco-openbao/blob/main/LICENSE).
 OpenBao itself is licensed under the
-[Mozilla Public License 2.0](https://github.com/openbao/openbao/blob/main/LICENSE),
-a copy of which is bundled in the package as `tools\LICENSE.txt`.
+[Mozilla Public License 2.0](https://github.com/openbao/openbao/blob/main/LICENSE).
 
 This is an unofficial, community-maintained package and is not affiliated with
 or endorsed by the OpenBao project. Report packaging issues on the

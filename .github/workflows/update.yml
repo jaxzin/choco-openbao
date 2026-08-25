@@ -53,4 +53,3 @@ jobs:
           add-paths: |
             openbao.nuspec
             tools/chocolateyInstall.ps1
-            tools/VERIFICATION.txt
