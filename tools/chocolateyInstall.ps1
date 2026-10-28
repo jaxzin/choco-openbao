@@ -7,10 +7,10 @@ $toolsDir    = Split-Path -Parent $MyInvocation.MyCommand.Definition
 # that matches the current processor architecture. Both URLs and their SHA256
 # checksums are taken from the official `checksums.txt` for the release
 # and are kept up to date by the chocolatey-au updater (update.ps1).
-$amd64Url      = 'https://github.com/openbao/openbao/releases/download/v2.6.2/openbao_2.6.2_windows_amd64.zip'
-$amd64Checksum = '12e8d40c71fe5a0aa23062c6c36a77a96717005980e30d0d42acdea3268d3fa2'
-$arm64Url      = 'https://github.com/openbao/openbao/releases/download/v2.6.2/openbao_2.6.2_windows_arm64.zip'
-$arm64Checksum = 'e4fa1edb95129c36a36cfc5ad1b96198208344df42f66371b14fe579328ec662'
+$amd64Url      = 'https://github.com/openbao/openbao/releases/download/v2.7.2/openbao_2.7.2_windows_amd64.zip'
+$amd64Checksum = 'b058d30eac461e78e56305d3aa7371c061405a060f364aa20999dc3a309264f4'
+$arm64Url      = 'https://github.com/openbao/openbao/releases/download/v2.7.2/openbao_2.7.2_windows_arm64.zip'
+$arm64Checksum = 'e1acf36792e35c7242742fb59f4bdb15f66282732d6ab753092363ff9b3a6ec1'
 
 # PROCESSOR_ARCHITECTURE reports the architecture of the running process; under a
 # 32-bit (WOW64) process on a 64-bit OS the native architecture is exposed via
